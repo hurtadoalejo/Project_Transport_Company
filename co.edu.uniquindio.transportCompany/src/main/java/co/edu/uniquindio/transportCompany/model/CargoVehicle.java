@@ -1,4 +1,4 @@
-package co.edu.uniquindio.transportCompany;
+package co.edu.uniquindio.transportCompany.model;
 
 public class CargoVehicle extends Vehicle{
     private double cargoCapacity;

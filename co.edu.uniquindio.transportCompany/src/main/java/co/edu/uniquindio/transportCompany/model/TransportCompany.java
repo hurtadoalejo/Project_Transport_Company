@@ -1,4 +1,4 @@
-package co.edu.uniquindio.transportCompany;
+package co.edu.uniquindio.transportCompany.model;
 import java.util.LinkedList;
 
 public class TransportCompany {

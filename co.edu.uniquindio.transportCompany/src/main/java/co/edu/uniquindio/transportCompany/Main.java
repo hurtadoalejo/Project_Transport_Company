@@ -1,5 +1,10 @@
 package co.edu.uniquindio.transportCompany;
 
+import co.edu.uniquindio.transportCompany.model.PassengerVehicle;
+import co.edu.uniquindio.transportCompany.model.Proprietor;
+import co.edu.uniquindio.transportCompany.model.TransportCompany;
+import co.edu.uniquindio.transportCompany.model.User;
+
 public class Main {
     public static void main(String[] args) {
         TransportCompany transportCompany = new TransportCompany("La Carreta");
