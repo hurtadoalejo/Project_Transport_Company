@@ -20,7 +20,7 @@ public class ModelFactory {
         return transportCompany;
     }
 
-    
+
     public TransportCompany getTransportCompany() {
         return transportCompany;
     }
