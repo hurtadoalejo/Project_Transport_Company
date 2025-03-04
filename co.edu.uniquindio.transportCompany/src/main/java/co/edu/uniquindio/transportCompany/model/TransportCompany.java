@@ -100,6 +100,11 @@ public class TransportCompany {
         this.usersList = usersList;
     }
 
+    /**
+     * Method to add one user to the transport company's users list
+     * @param user User to add
+     * @return Boolean if the method did it successfully or not
+     */
     public boolean addUser(User user) {
         boolean done = false;
         if (!verifyUser(user.getName())){
@@ -109,6 +114,11 @@ public class TransportCompany {
         return done;
     }
 
+    /**
+     * Method to verify if exists one user with the same name as one given
+     * @param name Name given to verify
+     * @return Boolean if the user was found or not
+     */
     public boolean verifyUser(String name){
         boolean repeated = false;
         for (User user : usersList) {
@@ -120,6 +130,11 @@ public class TransportCompany {
         return repeated;
     }
 
+    /**
+     * Method to delete one user to the transport company's users list
+     * @param name Name of the user to delete
+     * @return Boolean if the method did it successfully or not
+     */
     public boolean deleteUser(String name) {
         boolean done = false;
         for (User user : usersList) {
@@ -133,6 +148,12 @@ public class TransportCompany {
         return done;
     }
 
+    /**
+     *
+     * @param name
+     * @param newUser
+     * @return
+     */
     public boolean updateUser(String name, User newUser){
         boolean done = false;
         for (User user : usersList) {
@@ -209,13 +230,11 @@ public class TransportCompany {
         boolean done = false;
         Proprietor proprietor = vehicle.getProprietor();
         if (!verifyVehicle(vehicle.getPlate()) && isProprietorAvailable(proprietor)){
-            if (vehicle instanceof CargoVehicle){
-                CargoVehicle cargoVehicle = (CargoVehicle) vehicle;
+            if (vehicle instanceof CargoVehicle cargoVehicle){
                 cargoVehiclesList.add(cargoVehicle);
                 proprietor.setPrincipalVehicle(cargoVehicle);
                 done = true;
-            } else if (vehicle instanceof PassengerVehicle) {
-                PassengerVehicle passengerVehicle = (PassengerVehicle) vehicle;
+            } else if (vehicle instanceof PassengerVehicle passengerVehicle) {
                 passengerVehiclesList.add(passengerVehicle);
                 proprietor.setPrincipalVehicle(passengerVehicle);
                 done = true;
@@ -266,8 +285,7 @@ public class TransportCompany {
 
     public boolean updateVehicle(String plate, Vehicle newVehicle){
         boolean done = false;
-        if (newVehicle instanceof PassengerVehicle) {
-            PassengerVehicle newPassengerVehicle = (PassengerVehicle) newVehicle;
+        if (newVehicle instanceof PassengerVehicle newPassengerVehicle) {
             for (PassengerVehicle temporalPassengerVehicle : passengerVehiclesList) {
                 if (temporalPassengerVehicle.getPlate().equals(plate)) {
                     changeAttributesPassengerVehicle(temporalPassengerVehicle, newPassengerVehicle);
@@ -275,8 +293,7 @@ public class TransportCompany {
                 }
             }
         }
-        else if (newVehicle instanceof CargoVehicle) {
-            CargoVehicle newCargoVehicle = (CargoVehicle) newVehicle;
+        else if (newVehicle instanceof CargoVehicle newCargoVehicle) {
             for (CargoVehicle temporalCargoVehicle : cargoVehiclesList) {
                 if (temporalCargoVehicle.getPlate().equals(plate)) {
                     changeAttributesCargoVehicle(temporalCargoVehicle, newCargoVehicle);
@@ -399,7 +416,7 @@ public class TransportCompany {
         }
     }
 
-    public String searchUsersInPassengerVehicle(String plate){
+    public String numberUsersInPassengerVehicle(String plate){
         String message = "";
         int counter = countUsersInPassengerVehicle(plate);
         if (counter == 0) {
@@ -414,11 +431,70 @@ public class TransportCompany {
         return message;
     }
 
+    /**
+     * Method to count the number of users that are in a passenger vehicle
+     * @param plate Plate of the passenger vehicle
+     * @return Counter
+     */
     public int countUsersInPassengerVehicle(String plate){
         int counter = 0;
         for(PassengerVehicle passengerVehicle : passengerVehiclesList){
             if (passengerVehicle.getPlate().equals(plate)) {
                 counter = passengerVehicle.getAssociatedUsersList().size();
+            }
+        }
+        return counter;
+    }
+
+    /**
+     * Method to give a message about the number of users that are more than 17 years old
+     * @return Personalized message
+     */
+    public String numberUsersNoMinors(){
+        String message = "No hay usuarios mayores de edad";
+        int counter = countUsersNoMinors();
+        if (counter != 0){
+            message = "Hay " + counter + " usuarios, que son mayores de edad";
+        }
+        return message;
+    }
+
+    /**
+     * Method to count the number of users that are more than 17 years old
+     * @return Counter
+     */
+    public int countUsersNoMinors(){
+        int counter = 0;
+        for(User user : usersList){
+            if (user.getAge() >= 18){
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    /**
+     * Method to give a message about the number of users transported
+     * @return Personalized message
+     */
+    public String numberUsersOnDay(){
+        String message = "No hubo ningun usuario transportado el dia de hoy.";
+        int counter = countTransportedUsers();
+        if (counter != 0){
+            message = "El numero de usuarios el dia de hoy fue de: " + counter;
+        }
+        return message;
+    }
+
+    /**
+     * Method to count the number of users that have a passenger vehicle associated
+     * @return Counter
+     */
+    public int countTransportedUsers(){
+        int counter = 0;
+        for(User user : usersList){
+            if (user.getVehicleAssociated() != null) {
+                counter++;
             }
         }
         return counter;
