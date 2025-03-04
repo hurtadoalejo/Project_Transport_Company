@@ -149,10 +149,10 @@ public class TransportCompany {
     }
 
     /**
-     *
-     * @param name
-     * @param newUser
-     * @return
+     * Method to update one user's information
+     * @param name Name of the user to update
+     * @param newUser User with the new information
+     * @return Boolean if the method did it successfully or not
      */
     public boolean updateUser(String name, User newUser){
         boolean done = false;
@@ -170,6 +170,11 @@ public class TransportCompany {
         return done;
     }
 
+    /**
+     * Method to add one user to the transport company's proprietor list
+     * @param proprietor Proprietor to add
+     * @return Boolean if the method did it successfully or not
+     */
     public boolean addProprietor(Proprietor proprietor) {
         boolean done = false;
         if (!verifyProprietor(proprietor.getId())){
@@ -179,6 +184,11 @@ public class TransportCompany {
         return done;
     }
 
+    /**
+     * Method to verify if exists one proprietor with the same id as one given
+     * @param id ID given to verify
+     * @return Boolean if the proprietor was found or not
+     */
     public boolean verifyProprietor(String id){
         boolean repeated = false;
         for (Proprietor proprietor : propietorsList) {
@@ -190,6 +200,11 @@ public class TransportCompany {
         return repeated;
     }
 
+    /**
+     * Method to delete one proprietor to the transport company's proprietors list
+     * @param id ID of the proprietor to delete
+     * @return Boolean if the method did it successfully or not
+     */
     public boolean deleteProprietor(String id) {
         boolean done = false;
         for (Proprietor proprietor : propietorsList) {
@@ -207,6 +222,12 @@ public class TransportCompany {
         return done;
     }
 
+    /**
+     * Method to update one proprietor's information
+     * @param id ID of the proprietor to update
+     * @param newProprietor Proprietor with the new information
+     * @return Boolean if the method did it successfully or not
+     */
     public boolean updateProprietor(String id, Proprietor newProprietor){
         boolean done = false;
         for (Proprietor proprietor : propietorsList) {
@@ -226,6 +247,11 @@ public class TransportCompany {
         return done;
     }
 
+    /**
+     * Method to add one vehicle to the transport company's vehicles list
+     * @param vehicle Vehicle to add
+     * @return Boolean if the method did it successfully or not
+     */
     public boolean addVehicle(Vehicle vehicle){
         boolean done = false;
         Proprietor proprietor = vehicle.getProprietor();
@@ -243,6 +269,11 @@ public class TransportCompany {
         return done;
     }
 
+    /**
+     * Method to verify if exists one vehicle with the same plate as one given
+     * @param plate Plate given to verify
+     * @return Boolean if the proprietor was found or not
+     */
     public boolean verifyVehicle(String plate){
         for (Vehicle cargoVehicle : cargoVehiclesList) {
             if (cargoVehicle.getPlate().equals(plate)) {
@@ -257,6 +288,11 @@ public class TransportCompany {
         return false;
     }
 
+    /**
+     * Method to delete one vehicle to the transport company's vehicles list
+     * @param plate Plate of the vehicle to delete
+     * @return Boolean if the method did it successfully or not
+     */
     public boolean deleteVehicle(String plate){
         boolean done = false;
         for (Vehicle cargoVehicle : cargoVehiclesList) {
@@ -283,6 +319,12 @@ public class TransportCompany {
         return done;
     }
 
+    /**
+     * Method to update one vehicle's information
+     * @param plate Plate of the vehicle to update
+     * @param newVehicle Vehicle with the new information
+     * @return Boolean if the method did it successfully or not
+     */
     public boolean updateVehicle(String plate, Vehicle newVehicle){
         boolean done = false;
         if (newVehicle instanceof PassengerVehicle newPassengerVehicle) {
@@ -304,10 +346,20 @@ public class TransportCompany {
         return done;
     }
 
-    public boolean changeAttributesPassengerVehicle(PassengerVehicle passengerVehicle, PassengerVehicle newPassengerVehicle){
-        if (newPassengerVehicle.getMaxPassengers() >= passengerVehicle.getAssociatedUsersList().size() && !isProprietorInAssociates(passengerVehicle.getAssociatedProprietorList(), newPassengerVehicle.getProprietor())){
-            if (!verifyVehicle(newPassengerVehicle.getPlate()) || passengerVehicle.getPlate().equals(newPassengerVehicle.getPlate())){
-                if (isProprietorAvailable(newPassengerVehicle.getProprietor()) || newPassengerVehicle.getProprietor().equals(passengerVehicle.getProprietor())){
+    /**
+     * Method to change attributes of one passenger vehicle
+     * @param passengerVehicle Passenger vehicle to change attributes
+     * @param newPassengerVehicle Passenger vehicle with the new attributes
+     * @return Boolean if the method did it successfully or not
+     */
+    public boolean changeAttributesPassengerVehicle(PassengerVehicle passengerVehicle
+            , PassengerVehicle newPassengerVehicle){
+        if (newPassengerVehicle.getMaxPassengers() >= passengerVehicle.getAssociatedUsersList().size() && !isProprietorInAssociates(passengerVehicle.getAssociatedProprietorList()
+                , newPassengerVehicle.getProprietor())){
+            if (!verifyVehicle(newPassengerVehicle.getPlate())
+                    || passengerVehicle.getPlate().equals(newPassengerVehicle.getPlate())){
+                if (isProprietorAvailable(newPassengerVehicle.getProprietor())
+                        || newPassengerVehicle.getProprietor().equals(passengerVehicle.getProprietor())){
                     passengerVehicle.setMaxPassengers(newPassengerVehicle.getMaxPassengers());
                     passengerVehicle.setBrand(newPassengerVehicle.getBrand());
                     passengerVehicle.setModel(newPassengerVehicle.getModel());
@@ -321,6 +373,12 @@ public class TransportCompany {
         return false;
     }
 
+    /**
+     * Method to change attributes of one cargo vehicle
+     * @param cargoVehicle Cargo vehicle to change attributes
+     * @param newCargoVehicle Cargo vehicle with the new attributes
+     * @return Boolean if the method did it successfully or not
+     */
     public boolean changeAttributesCargoVehicle(CargoVehicle cargoVehicle, CargoVehicle newCargoVehicle){
         if (!isProprietorInAssociates(cargoVehicle.getAssociatedProprietorList(), newCargoVehicle.getProprietor())){
             if (isProprietorAvailable(newCargoVehicle.getProprietor()) || newCargoVehicle.getProprietor().equals(cargoVehicle.getProprietor())){
@@ -339,6 +397,12 @@ public class TransportCompany {
         return false;
     }
 
+    /**
+     * Method to verify if a proprietor is on one associatesList
+     * @param associatesList Associates list to find
+     * @param proprietor Proprietor to verify
+     * @return Boolean if the proprietor was found or not
+     */
     public boolean isProprietorInAssociates(LinkedList<Proprietor> associatesList, Proprietor proprietor){
         for (Proprietor temporalProprietor : associatesList) {
             if (temporalProprietor.getId().equals(proprietor.getId())) {
@@ -348,6 +412,11 @@ public class TransportCompany {
         return false;
     }
 
+    /**
+     * Method verify if a proprietor doesn't have a principal vehicle
+     * @param proprietor Proprietor to verify
+     * @return Boolean if the proprietor is available or not
+     */
     public boolean isProprietorAvailable(Proprietor proprietor) {
         boolean isAvailable = false;
         if (proprietor != null) {
@@ -358,6 +427,12 @@ public class TransportCompany {
         return isAvailable;
     }
 
+    /**
+     * Method to add one user to the associated users list of one passenger vehicle
+     * @param passengerVehicle Passenger vehicle to get associated with
+     * @param user User to associate
+     * @return Boolean if the action was done successfully or not
+     */
     public boolean addUserToVehicle(PassengerVehicle passengerVehicle, User user){
         if (!passengerVehicle.getAssociatedUsersList().contains(user) && user.getVehicleAssociated() == null) {
             user.setVehicleAssociated(passengerVehicle);
@@ -367,9 +442,12 @@ public class TransportCompany {
         return false;
     }
 
+    /**
+     * Method to delete all the users associated from a vehicle
+     * @param vehicle Vehicle given
+     */
     public void deleteUsersFromVehicle(Vehicle vehicle) {
-        if (vehicle instanceof PassengerVehicle){
-            PassengerVehicle passengerVehicle = (PassengerVehicle) vehicle;
+        if (vehicle instanceof PassengerVehicle passengerVehicle){
             for (User user : passengerVehicle.getAssociatedUsersList()) {
                 user.setVehicleAssociated(null);
             }
@@ -377,6 +455,11 @@ public class TransportCompany {
         }
     }
 
+    /**
+     * Method to delete one user from its associated vehicle
+     * @param user User given to delete association
+     * @return Boolean if the action was done successfully or not
+     */
     public boolean deleteUserFromVehicle(User user) {
         if (user.getVehicleAssociated() != null) {
             user.getVehicleAssociated().getAssociatedUsersList().remove(user);
@@ -386,6 +469,12 @@ public class TransportCompany {
         return false;
     }
 
+    /**
+     * Method to add one proprietor to a vehicle's associated proprietors list
+     * @param vehicle Vehicle given to get associate with
+     * @param proprietor Proprietor to associate
+     * @return Boolean if the action was done successfully or not
+     */
     public boolean addProprietorAssociated(Vehicle vehicle, Proprietor proprietor){
         if (!isProprietorInAssociates(vehicle.getAssociatedProprietorList(), proprietor) && proprietor != vehicle.getProprietor()){
             vehicle.getAssociatedProprietorList().add(proprietor);
@@ -395,6 +484,12 @@ public class TransportCompany {
         return false;
     }
 
+    /**
+     * Method to delete one proprietor from a vehicle's associated proprietors list
+     * @param vehicle Vehicle given to delete association
+     * @param proprietor Proprietor given to delete association
+     * @return Boolean if the action was done successfully or not
+     */
     public boolean deleteProprietorAssociated(Vehicle vehicle, Proprietor proprietor){
         if (vehicle.getAssociatedProprietorList().contains(proprietor)){
             vehicle.getAssociatedProprietorList().remove(proprietor);
@@ -404,12 +499,20 @@ public class TransportCompany {
         return false;
     }
 
+    /**
+     * Method delete all the proprietor from a vehicle's associated proprietors list
+     * @param vehicle Vehicle given
+     */
     public void deleteProprietorsAssociated(Vehicle vehicle){
         for (Proprietor proprietor : vehicle.getAssociatedProprietorList()) {
             deleteProprietorAssociated(vehicle, proprietor);
         }
     }
 
+    /**
+     * Method delete one proprietor from all of its associated vehicles list
+     * @param proprietor Proprietor to delete
+     */
     public void deleteProprietorFromVehicles(Proprietor proprietor){
         for (Vehicle vehicle : proprietor.getAssociatedVehiclesList()) {
             deleteProprietorAssociated(vehicle, proprietor);
