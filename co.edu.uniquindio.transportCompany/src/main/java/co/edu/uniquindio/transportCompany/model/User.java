@@ -1,6 +1,6 @@
 package co.edu.uniquindio.transportCompany.model;
 
-import java.util.LinkedList;
+import co.edu.uniquindio.transportCompany.builder.UserBuilder;
 
 public class User {
     private String name;
@@ -14,10 +14,11 @@ public class User {
      * @param age Age of the user to create
      * @param wight Wight of the user to create
      */
-    public User(String name, int age, double wight) {
+    public User(String name, int age, double wight, PassengerVehicle vehicleAssociated) {
         this.name = name;
         this.age = age;
         this.wight = wight;
+        this.vehicleAssociated = vehicleAssociated;
     }
 
     /**
@@ -52,35 +53,23 @@ public class User {
         return vehicleAssociated;
     }
 
-    /**
-     * Method to modify the user's name
-     * @param name New username
-     */
-    public void setName(String name) {
-        this.name = name;
+    public static UserBuilder builder(){
+        return new UserBuilder();
     }
 
-    /**
-     * Method to modify the user's age
-     * @param age New user age
-     */
-    public void setAge(int age) {
-        this.age = age;
+    public UserBuilder toBuild(){
+        UserBuilder newUser = new UserBuilder()
+                .name(name)
+                .age(age)
+                .wight(wight)
+                .vehicleAssociated(vehicleAssociated);
+        updateUserInVehicle();
+        return newUser;
     }
 
-    /**
-     * Method to modify the user's wight
-     * @param wight New user wight
-     */
-    public void setWight(double wight) {
-        this.wight = wight;
-    }
+    private void updateUserInVehicle() {
+        if (vehicleAssociated != null) {
 
-    /**
-     * Method to modify the user's vehicle associated
-     * @param vehicleAssociated New associated vehicle
-     */
-    public void setVehicleAssociated(PassengerVehicle vehicleAssociated) {
-        this.vehicleAssociated = vehicleAssociated;
+        }
     }
 }

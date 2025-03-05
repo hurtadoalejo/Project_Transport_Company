@@ -44,8 +44,8 @@ public class ModelFactory {
         PassengerVehicle passengerVehicle2 = new PassengerVehicle("VAD905","Toyota", "Red", 2005, proprietor2, 1);
         PassengerVehicle passengerVehicle3 = new PassengerVehicle("VAD906","Mazda", "Red", 2005, proprietor3, 2);
         PassengerVehicle passengerVehicle4 = new PassengerVehicle("VAD907","Mazda", "Blue", 2005, proprietor, 2);
-        User user = new User("Veronica", 21, 65);
-        User user2 = new User("Mariana", 21, 65);
+        User user = User.builder().name("Veronica").age(21).wight(65).build();
+        User user2 = User.builder().name("Mariana").age(21).wight(65).build();
         transportCompany.addUser(user);
         transportCompany.addUser(user2);
         transportCompany.addProprietor(proprietor);
