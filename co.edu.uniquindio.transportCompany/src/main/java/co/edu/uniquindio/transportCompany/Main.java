@@ -12,6 +12,5 @@ public class Main {
     public static void main(String[] args) {
         ModelFactory modelFactory = ModelFactory.getInstance();
         TransportCompany transportCompany = modelFactory.getTransportCompany();
-
     }
 }

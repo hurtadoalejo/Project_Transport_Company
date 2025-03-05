@@ -58,18 +58,10 @@ public class User {
     }
 
     public UserBuilder toBuild(){
-        UserBuilder newUser = new UserBuilder()
+        return new UserBuilder()
                 .name(name)
                 .age(age)
                 .wight(wight)
                 .vehicleAssociated(vehicleAssociated);
-        updateUserInVehicle();
-        return newUser;
-    }
-
-    private void updateUserInVehicle() {
-        if (vehicleAssociated != null) {
-
-        }
     }
 }
