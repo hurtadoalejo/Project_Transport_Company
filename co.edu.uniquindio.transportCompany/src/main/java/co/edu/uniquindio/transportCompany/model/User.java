@@ -64,4 +64,17 @@ public class User {
                 .wight(wight)
                 .vehicleAssociated(vehicleAssociated);
     }
+
+    public void updateUserInVehicle(User newUser){
+        if (vehicleAssociated != null) {
+            vehicleAssociated.getAssociatedUsersList().replaceAll
+                    (user -> user.getName().equals(this.name) ? newUser : user);
+        }
+    }
+
+    public void updateUserInCompany(User newUser){
+        if (vehicleAssociated != null) {
+            
+        }
+    }
 }
