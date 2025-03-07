@@ -124,21 +124,37 @@ public class TransportCompany {
     public User obtainUser(String username) {
         User userFounded = null;
         for (User user : usersList) {
-            if (user.getName().equals(username))
+            if (user.getName().equals(username)) {
                 userFounded = user;
+                break;
+            }
         }
         return userFounded;
     }
 
     /**
-     * Method to delete one user to the transport company's users list
+     * Method to delete one user to the transport company's users list and classes related to it
      * @param name Name of the user to delete
-     * @return Boolean if the method did it successfully or not
+     * @return Boolean if the action was done successfully or not
      */
     public boolean deleteUser(String name) {
         User userFounded = obtainUser(name);
         if (userFounded != null) {
             usersList.remove(userFounded);
+            deleteUserPermanentlyFromVehicle(userFounded);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to delete one user that's going to be deleted from anywhere, from its associated vehicle
+     * @param user User to be deleted
+     * @return Boolean if the action was done successfully or not
+     */
+    private boolean deleteUserPermanentlyFromVehicle(User user) {
+        if (user != null && user.getVehicleAssociated() != null) {
+            user.getVehicleAssociated().getAssociatedUsersList().remove(user);
             return true;
         }
         return false;
@@ -179,7 +195,7 @@ public class TransportCompany {
             return false;
         }
         if (oldUser.getVehicleAssociated() == null && newUser.getVehicleAssociated() != null) {
-            addUserToVehicle(newUser.getVehicleAssociated(), newUser.getName());
+            newUser.getVehicleAssociated().getAssociatedUsersList().add(newUser);
             return true;
         } else if (oldUser.getVehicleAssociated() != null && newUser.getVehicleAssociated() != null) {
             exchangeUserPassengerVehicle(oldUser, newUser);
@@ -200,7 +216,6 @@ public class TransportCompany {
      */
     public boolean exchangeUserPassengerVehicle(User oldUser, User newUser) {
         if (!oldUser.getVehicleAssociated().getPlate().equals(newUser.getVehicleAssociated().getPlate())) {
-            oldUser.getVehicleAssociated().getAssociatedUsersList().remove(oldUser);
             addUserToVehicle(newUser.getVehicleAssociated(), newUser.getName());
             return true;
         }
@@ -497,11 +512,13 @@ public class TransportCompany {
      */
     public boolean addUserToVehicle(PassengerVehicle passengerVehicle, String name){
         User userFound = obtainUser(name);
-        if (userFound == null || passengerVehicle.getAssociatedUsersList().size() >= passengerVehicle.getMaxPassengers()) {
+        if (userFound == null ||
+                passengerVehicle.getAssociatedUsersList().size() >= passengerVehicle.getMaxPassengers()) {
             return false;
         }
         if (!passengerVehicle.getAssociatedUsersList().contains(userFound)) {
-            passengerVehicle.getAssociatedUsersList().add(userFound);
+            updateUser(userFound.getName(), userFound.getName(), userFound.getAge(),
+                    userFound.getWeight(), passengerVehicle);
             return true;
         }
         return false;

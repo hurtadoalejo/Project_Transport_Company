@@ -45,7 +45,7 @@ public class ModelFactory {
         PassengerVehicle passengerVehicle3 = new PassengerVehicle("VAD906","Mazda", "Red", 2005, proprietor3, 2);
         PassengerVehicle passengerVehicle4 = new PassengerVehicle("VAD907","Mazda", "Blue", 2005, proprietor, 2);
         transportCompany.addUser("Veronica", 21, 65);
-        transportCompany.addUser("Veronica", 21, 65);
+        transportCompany.addUser("Mariana", 21, 65);
         transportCompany.addProprietor(proprietor);
         transportCompany.addProprietor(proprietor2);
         transportCompany.addVehicle(passengerVehicle);
@@ -53,6 +53,7 @@ public class ModelFactory {
         transportCompany.addVehicle(passengerVehicle3);
         transportCompany.addUserToVehicle(passengerVehicle, "Veronica");
         transportCompany.addUserToVehicle(passengerVehicle, "Mariana");
+        transportCompany.deleteUser("Veronica");
     }
 
     /*public boolean addUser(User user){
