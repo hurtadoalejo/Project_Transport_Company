@@ -6,7 +6,7 @@ import co.edu.uniquindio.transportCompany.model.User;
 public class UserBuilder {
     protected String name;
     protected int age;
-    protected double wight;
+    protected double weight;
     protected PassengerVehicle vehicleAssociated;
 
     public UserBuilder name(String name){
@@ -19,8 +19,8 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder wight(double wight){
-        this.wight = wight;
+    public UserBuilder weight(double weight){
+        this.weight = weight;
         return this;
     }
 
@@ -30,6 +30,6 @@ public class UserBuilder {
     }
 
     public User build(){
-        return new User(name, age, wight, vehicleAssociated);
+        return new User(name, age, weight, vehicleAssociated);
     }
 }

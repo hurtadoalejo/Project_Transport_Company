@@ -44,30 +44,29 @@ public class ModelFactory {
         PassengerVehicle passengerVehicle2 = new PassengerVehicle("VAD905","Toyota", "Red", 2005, proprietor2, 1);
         PassengerVehicle passengerVehicle3 = new PassengerVehicle("VAD906","Mazda", "Red", 2005, proprietor3, 2);
         PassengerVehicle passengerVehicle4 = new PassengerVehicle("VAD907","Mazda", "Blue", 2005, proprietor, 2);
-        User user = User.builder().name("Veronica").age(21).wight(65).build();
-        User user2 = User.builder().name("Mariana").age(21).wight(65).build();
-        transportCompany.addUser(user);
-        transportCompany.addUser(user2);
+        transportCompany.addUser("Veronica", 21, 65);
+        transportCompany.addUser("Veronica", 21, 65);
         transportCompany.addProprietor(proprietor);
         transportCompany.addProprietor(proprietor2);
         transportCompany.addVehicle(passengerVehicle);
         transportCompany.addVehicle(passengerVehicle2);
         transportCompany.addVehicle(passengerVehicle3);
-        transportCompany.addUserToVehicle(passengerVehicle, user);
-        transportCompany.addUserToVehicle(passengerVehicle, user2);
+        transportCompany.addUserToVehicle(passengerVehicle, "Veronica");
+        transportCompany.addUserToVehicle(passengerVehicle, "Mariana");
     }
 
-    public boolean addUser(User user){
+    /*public boolean addUser(User user){
         return transportCompany.addUser(user);
-    }
+    }*/
 
     public boolean deleteUser(String name){
         return transportCompany.deleteUser(name);
     }
 
+    /*
     public boolean updateUser(String name, User newUser){
         return transportCompany.updateUser(name, newUser);
-    }
+    }*/
 
     public boolean addProprietor(Proprietor proprietor){
         return transportCompany.addProprietor(proprietor);
@@ -93,9 +92,10 @@ public class ModelFactory {
         return transportCompany.updateVehicle(plate, newVehicle);
     }
 
+    /*
     public boolean addUserToVehicle(PassengerVehicle passengerVehicle, User user){
         return transportCompany.addUserToVehicle(passengerVehicle, user);
-    }
+    }*/
 
     public boolean deleteUserFromVehicle(User user){
         return transportCompany.deleteUserFromVehicle(user);
