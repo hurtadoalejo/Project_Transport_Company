@@ -175,9 +175,11 @@ public class TransportCompany {
         if (userFounded != null) {
             if (possibleUser == null || possibleUser.getName().equals(userFounded.getName())) {
                 User newUser = User.builder().name(name).age(age).weight(weight).vehicleAssociated(vehicleAssociated).build();
-                exchangeUserTransportCompany(userFounded, newUser);
-                updateUserPassengerVehicle(userFounded, newUser.getName());
-                return true;
+                if (updateUserPassengerVehicle(userFounded, newUser)){
+                    exchangeUserTransportCompany(userFounded, newUser);
+                    return true;
+                }
+                return false;
             }
         }
         return false;
@@ -186,11 +188,10 @@ public class TransportCompany {
     /**
      * Method to update one user's vehicle associated for a new user's vehicle associated
      * @param oldUser Old user
-     * @param name Name of the new user
+     * @param newUser New user
      * @return Boolean if the action was done successfully or not
      */
-    public boolean updateUserPassengerVehicle(User oldUser, String name) {
-        User newUser = obtainUser(name);
+    private boolean updateUserPassengerVehicle(User oldUser, User newUser) {
         if (newUser == null) {
             return false;
         }
@@ -201,7 +202,7 @@ public class TransportCompany {
             exchangeUserPassengerVehicle(oldUser, newUser);
             return true;
         } else if (oldUser.getVehicleAssociated() != null && newUser.getVehicleAssociated() == null) {
-            deleteUserFromVehicle(oldUser);
+            oldUser.getVehicleAssociated().getAssociatedUsersList().remove(oldUser);
             return true;
         }
 
@@ -215,8 +216,11 @@ public class TransportCompany {
      * @return Boolean if the action was done successfully or not
      */
     public boolean exchangeUserPassengerVehicle(User oldUser, User newUser) {
-        if (!oldUser.getVehicleAssociated().getPlate().equals(newUser.getVehicleAssociated().getPlate())) {
-            addUserToVehicle(newUser.getVehicleAssociated(), newUser.getName());
+        PassengerVehicle oldPassengerVehicle = oldUser.getVehicleAssociated();
+        PassengerVehicle newPassengerVehicle = newUser.getVehicleAssociated();
+        if (!oldPassengerVehicle.getPlate().equals(newPassengerVehicle.getPlate()) && newPassengerVehicle.getAssociatedUsersList().size() < newPassengerVehicle.getMaxPassengers()) {
+            oldPassengerVehicle.getAssociatedUsersList().remove(oldUser);
+            newPassengerVehicle.getAssociatedUsersList().add(newUser);
             return true;
         }
         else{

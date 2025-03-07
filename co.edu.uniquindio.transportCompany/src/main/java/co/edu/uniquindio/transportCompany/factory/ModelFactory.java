@@ -53,7 +53,7 @@ public class ModelFactory {
         transportCompany.addVehicle(passengerVehicle3);
         transportCompany.addUserToVehicle(passengerVehicle, "Veronica");
         transportCompany.addUserToVehicle(passengerVehicle, "Mariana");
-        transportCompany.deleteUser("Veronica");
+        transportCompany.updateUser("Veronica", "Carol", 21, 65, passengerVehicle2);
     }
 
     /*public boolean addUser(User user){
