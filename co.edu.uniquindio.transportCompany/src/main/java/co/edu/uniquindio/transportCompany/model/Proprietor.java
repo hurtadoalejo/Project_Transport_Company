@@ -1,5 +1,7 @@
 package co.edu.uniquindio.transportCompany.model;
 
+import co.edu.uniquindio.transportCompany.builder.ProprietorBuilder;
+
 import java.util.LinkedList;
 
 public class Proprietor {
@@ -12,14 +14,16 @@ public class Proprietor {
      * @param name Name of the proprietor to create
      * @param email Email of the proprietor to create
      * @param phoneNumber Phone number of the proprietor to create
-     * @param id Id of the proprietor to create
+     * @param id ID of the proprietor to create
      */
-    public Proprietor(String name, String email, String phoneNumber, String id) {
+    public Proprietor(String name, String email, String phoneNumber, String id, Vehicle principalVehicle,
+                      LinkedList<Vehicle> associatedVehiclesList) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.id = id;
-        this.associatedVehiclesList = new LinkedList<>();
+        this.principalVehicle = principalVehicle;
+        this.associatedVehiclesList = associatedVehiclesList;
     }
 
     /**
@@ -71,50 +75,10 @@ public class Proprietor {
     }
 
     /**
-     * Method to modify the proprietor's name
-     * @param name New name
+     * Method to create a proprietor builder instance
+     * @return Proprietor builder instance
      */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Method to modify the proprietor's email
-     * @param email New email
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
-     * Method to modify the proprietor's id
-     * @param id New id
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    /**
-     * Method to modify the proprietor's phone number
-     * @param phoneNumber New phone number
-     */
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    /**
-     * Method to modify the proprietor's principal vehicle
-     * @param principalVehicle New principal vehicle
-     */
-    public void setPrincipalVehicle(Vehicle principalVehicle) {
-        this.principalVehicle = principalVehicle;
-    }
-
-    /**
-     * Method to modify the proprietor's associated vehicles list
-     * @param associatedVehiclesList New associated vehicles list
-     */
-    public void setAssociatedVehiclesList(LinkedList<Vehicle> associatedVehiclesList) {
-        this.associatedVehiclesList = associatedVehiclesList;
+    public static ProprietorBuilder builder(){
+        return new ProprietorBuilder();
     }
 }

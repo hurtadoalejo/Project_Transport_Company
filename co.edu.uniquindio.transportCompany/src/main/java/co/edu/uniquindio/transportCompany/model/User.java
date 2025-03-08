@@ -53,6 +53,10 @@ public class User {
         return vehicleAssociated;
     }
 
+    /**
+     * Method to create a user builder instance
+     * @return User builder instance
+     */
     public static UserBuilder builder(){
         return new UserBuilder();
     }
