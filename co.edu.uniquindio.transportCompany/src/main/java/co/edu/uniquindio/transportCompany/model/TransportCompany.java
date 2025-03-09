@@ -296,16 +296,17 @@ public class TransportCompany {
      * @return Boolean if the action was done successfully or not
      */
     public boolean updateProprietor(String oldId, String name, String email, String phoneNumber, String id, String plate) {
-        Proprietor proprietorFounded = obtainProprietor(id);
+        Proprietor proprietorFounded = obtainProprietor(oldId);
         Proprietor possibleProprietor = obtainProprietor(id);
         if (proprietorFounded != null) {
             if (possibleProprietor == null || possibleProprietor.equals(proprietorFounded)) {
                 Proprietor newProprietor = Proprietor.builder().name(name).email(email)
                         .phoneNumber(phoneNumber).id(id).principalVehicle(obtainVehicle(plate))
                         .associatedVehiclesList(proprietorFounded.getAssociatedVehiclesList()).build();
-                updateVehicleAssociated(proprietorFounded, newProprietor);
-                exchangeProprietorTransportCompany(proprietorFounded, newProprietor);
-                return true;
+                if (updateVehicleAssociated(proprietorFounded, newProprietor)){
+                    exchangeProprietorTransportCompany(proprietorFounded, newProprietor);
+                    return true;
+                }
             }
         }
         return false;
@@ -320,6 +321,7 @@ public class TransportCompany {
         for (int i = 0; i < propietorsList.size(); i++) {
             if (propietorsList.get(i).getId().equals(oldProprietor.getId())) {
                 propietorsList.set(i, newProprietor);
+                return;
             }
         }
     }
@@ -329,10 +331,15 @@ public class TransportCompany {
      * @param oldProprietor Old proprietor of the vehicle
      * @param newProprietor New proprietor of the vehicle
      */
-    private void updateVehicleAssociated(Proprietor oldProprietor, Proprietor newProprietor) {
+    private boolean updateVehicleAssociated(Proprietor oldProprietor, Proprietor newProprietor) {
         if (oldProprietor.getPrincipalVehicle() != null && newProprietor.getPrincipalVehicle() == null) {
             deleteVehicle(oldProprietor.getPrincipalVehicle().getPlate());
         }
+        else if (oldProprietor.getPrincipalVehicle() != null && newProprietor.getPrincipalVehicle() != null) {
+            return oldProprietor.getPrincipalVehicle().getPlate()
+                    .equals(newProprietor.getPrincipalVehicle().getPlate());
+        }
+        return true;
     }
 
     /**
@@ -455,12 +462,57 @@ public class TransportCompany {
         return false;
     }
 
-    public boolean updateCargoVehicle(String plate, String brand, String colour, int model,){
+    /**
+     * Method to update one cargo vehicle's information
+     * @param oldPlate Old plate of the cargo vehicle
+     * @param plate New plate of the cargo vehicle
+     * @param brand New brand of the cargo vehicle
+     * @param colour New colour of the cargo vehicle
+     * @param model New model of the cargo vehicle
+     * @param id New id of the cargo vehicle
+     * @param cargoCapacity New cargo capacity of the cargo vehicle
+     * @param axlesNumber New axles number of the cargo vehicle
+     * @return Boolean if the action was done successfully or not
+     */
+    public boolean updateCargoVehicle(String oldPlate, String plate, String brand,
+                                      String colour, int model, String id, double cargoCapacity, int axlesNumber) {
+        CargoVehicle cargoVehicleFounded = obtainCargoVehicle(oldPlate);
+        CargoVehicle possibleCargoVehicle = obtainCargoVehicle(plate);
+        Proprietor proprietor = obtainProprietor(id);
+        if (cargoVehicleFounded != null && proprietor != null) {
+            if (possibleCargoVehicle == null || possibleCargoVehicle.getPlate().equals(oldPlate)
+                    || !isProprietorInAssociates(cargoVehicleFounded.getAssociatedProprietorList(), proprietor)) {
+                CargoVehicle newCargoVehicle = new CargoVehicleBuilder().plate(plate).brand(brand)
+                        .colour(colour).model(model).proprietor(proprietor)
+                        .associatedProprietorList(cargoVehicleFounded.getAssociatedProprietorList())
+                        .cargoCapacity(cargoCapacity).axlesNumber(axlesNumber).build();
+                if ((isProprietorAvailable(proprietor)
+                        || cargoVehicleFounded.getProprietor().getId().equals(proprietor.getId()))
+                        && !isProprietorInAssociates(cargoVehicleFounded.getAssociatedProprietorList(), proprietor)) {
+                    exchangeCargoVehicleTransportCompany(cargoVehicleFounded, newCargoVehicle);
+                    updateProprietor(proprietor.getId(), proprietor.getName(), proprietor.getEmail(),
+                            proprietor.getPhoneNumber(), proprietor.getId(), plate);
+                }
+            }
+        }
+        return false;
+    }
 
+    /**
+     * Method to exchange one cargoVehicle for another in the transport company's cargo vehicles list
+     * @param oldCargoVehicle Old cargo vehicle to be replaced
+     * @param newCargoVehicle New cargo vehicle to replace
+     */
+    private void exchangeCargoVehicleTransportCompany(CargoVehicle oldCargoVehicle, CargoVehicle newCargoVehicle){
+        for (int i = 0; i < getCargoVehiclesList().size(); i++) {
+            if (getCargoVehiclesList().get(i).getPlate().equals(oldCargoVehicle.getPlate())) {
+                getCargoVehiclesList().set(i, newCargoVehicle);
+            }
+        }
     }
 
     public boolean updatePassengerVehicle(String plate, String brand, String colour, int model){
-        
+        return false;
     }
 
     /**

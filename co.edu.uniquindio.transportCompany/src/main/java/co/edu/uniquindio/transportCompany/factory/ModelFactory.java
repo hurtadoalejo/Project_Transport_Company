@@ -45,15 +45,16 @@ public class ModelFactory {
         transportCompany.addProprietor("Alejandro", "alejo@gmail.com", "3161971519", "1");
         transportCompany.addProprietor("Luz", "alejo@gmail.com", "3161971519", "2");
         transportCompany.addProprietor("Hugo", "alejo@gmail.com", "3161971519", "3");
+        transportCompany.addProprietor("Thomas", "alejo@gmail.com", "3161971519", "4");
         transportCompany.addPassengerVehicle("VAD905","Mercedes", "Red", 2005, "1", 2);
         transportCompany.addPassengerVehicle("VAD906","Mercedes", "Red", 2005, "2", 2);
         transportCompany.addCargoVehicle("VAD907","Toyota", "Red", 2005, "3",56, 4);
         transportCompany.addUserToVehicle("VAD905", "Veronica");
         transportCompany.addUserToVehicle("VAD905", "Mariana");
-        transportCompany.addProprietorAssociated("VAD905", "1");
-        transportCompany.addProprietorAssociated("VAD905", "2");
-        transportCompany.addProprietorAssociated("VAD905", "3");
-        transportCompany.deleteProprietor("1");
+        transportCompany.addProprietorAssociated("VAD907", "1");
+        transportCompany.addProprietorAssociated("VAD907", "2");
+        transportCompany.updateProprietor("1","Alejandro", "alejo@gmail.com", "3161971519", "20", "VAD905");
+        //transportCompany.updateCargoVehicle("VAD907", "VAD908", "Toyota", "Red", 2005, "3",56, 4);
     }
 
 }

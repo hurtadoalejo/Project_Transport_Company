@@ -16,14 +16,14 @@ public class Main {
         System.out.println("Nombres en vehiculos: ");
         for (PassengerVehicle passengerVehicle : transportCompany.getPassengerVehiclesList()){
             System.out.println();
-            System.out.println(passengerVehicle.getPlate() + " " +passengerVehicle.getAssociatedProprietorList().size() + passengerVehicle.getProprietor().getId() + ":");
+            System.out.println(passengerVehicle.getPlate() + " " +passengerVehicle.getAssociatedProprietorList().size() + " " + passengerVehicle.getProprietor().getId() + ":");
             for (User user : passengerVehicle.getAssociatedUsersList()){
                 System.out.println(user.getName());
             }
         }
         for (CargoVehicle cargoVehicle : transportCompany.getCargoVehiclesList()){
             System.out.println();
-            System.out.println(cargoVehicle.getPlate() + " " + cargoVehicle.getAssociatedProprietorList().size() + cargoVehicle.getProprietor().getId() + ": ");
+            System.out.println(cargoVehicle.getPlate() + " " + cargoVehicle.getAssociatedProprietorList().size() + " "+ cargoVehicle.getProprietor().getId() + ": ");
             System.out.println(cargoVehicle.getProprietor().getName());
         }
         System.out.println();
