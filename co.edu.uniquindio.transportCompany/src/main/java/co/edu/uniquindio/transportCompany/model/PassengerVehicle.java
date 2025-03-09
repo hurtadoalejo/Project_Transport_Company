@@ -7,19 +7,22 @@ public class PassengerVehicle extends Vehicle{
     private LinkedList<User> associatedUsersList;
 
     /**
-     * The constructor method for the class PassengerVehicle
-     * @param plate Plate of the vehicle to create
-     * @param brand Brand of the vehicle to create
-     * @param colour Colour of the vehicle to create
-     * @param model Model of the vehicle to create
-     * @param proprietor Proprietor of the vehicle to create
-     * @param maxPassengers Max passengers of the vehicle to create
+     * The constructor method for the class passenger vehicle
+     * @param plate Plate of the passenger vehicle to create
+     * @param brand Brand of the passenger vehicle to create
+     * @param colour Colour of the passenger vehicle to create
+     * @param model Model of the passenger vehicle to create
+     * @param proprietor Proprietor of the passenger vehicle to create
+     * @param associatedProprietorList Associated proprietor list of the passenger vehicle to create
+     * @param maxPassengers Max passenger of the passenger vehicle to create
+     * @param associatedUsersList Associated users list of the passenger vehicle to create
      */
     public PassengerVehicle(String plate, String brand, String colour, int model, Proprietor proprietor,
-                            int maxPassengers) {
-        super(plate, brand, colour, model, proprietor);
+                            LinkedList<Proprietor> associatedProprietorList, int maxPassengers,
+                            LinkedList<User> associatedUsersList) {
+        super(plate, brand, colour, model, proprietor, associatedProprietorList);
         this.maxPassengers = maxPassengers;
-        this.associatedUsersList = new LinkedList<>();
+        this.associatedUsersList = associatedUsersList;
     }
 
     /**
@@ -36,21 +39,5 @@ public class PassengerVehicle extends Vehicle{
      */
     public LinkedList<User> getAssociatedUsersList() {
         return associatedUsersList;
-    }
-
-    /**
-     * Method to obtain the vehicle's max passengers
-     * @param maxPassengers New max passengers of the vehicle
-     */
-    public void setMaxPassengers(int maxPassengers) {
-        this.maxPassengers = maxPassengers;
-    }
-
-    /**
-     * Method to modify the vehicle's associated users list
-     * @param associatedUsersList New associated users list
-     */
-    public void setAssociatedUsersList(LinkedList<User> associatedUsersList) {
-        this.associatedUsersList = associatedUsersList;
     }
 }

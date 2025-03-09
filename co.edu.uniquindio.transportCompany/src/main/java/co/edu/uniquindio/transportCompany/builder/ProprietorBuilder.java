@@ -6,9 +6,9 @@ import co.edu.uniquindio.transportCompany.model.Vehicle;
 import java.util.LinkedList;
 
 public class ProprietorBuilder {
-    private String name, email, phoneNumber, id;
-    private Vehicle principalVehicle;
-    private LinkedList<Vehicle> associatedVehiclesList;
+    protected String name, email, phoneNumber, id;
+    protected Vehicle principalVehicle;
+    protected LinkedList<Vehicle> associatedVehiclesList;
 
     /**
      * Method to modify the ProprietorBuilder's name

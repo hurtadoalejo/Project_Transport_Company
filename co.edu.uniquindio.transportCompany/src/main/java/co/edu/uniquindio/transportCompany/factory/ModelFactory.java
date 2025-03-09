@@ -1,6 +1,9 @@
 package co.edu.uniquindio.transportCompany.factory;
 
+import co.edu.uniquindio.transportCompany.builder.PassengerVehicleBuilder;
 import co.edu.uniquindio.transportCompany.model.*;
+
+import java.util.LinkedList;
 
 public class ModelFactory {
     private static ModelFactory modelFactory;
@@ -46,11 +49,14 @@ public class ModelFactory {
         transportCompany.addProprietor("Alejandro", "alejo@gmail.com", "3161971519", "1092850037");
         transportCompany.addProprietor("Luz", "alejo@gmail.com", "3161971519", "109285003");
         transportCompany.addProprietor("Hugo", "alejo@gmail.com", "3161971519", "25022");
+        LinkedList<User> users = new LinkedList<>();
+        PassengerVehicle passengerVehicle = new PassengerVehicleBuilder().plate("VAD92G").brand("Toyota").colour("Azul").model(2020).maxPassengers(5).associatedUsersList(users).build();
+        transportCompany.getPassengerVehiclesList().add(passengerVehicle);
         /*transportCompany.addVehicle(passengerVehicle);
         transportCompany.addVehicle(passengerVehicle2);
         transportCompany.addVehicle(passengerVehicle3);
-        transportCompany.addUserToVehicle(passengerVehicle, "Veronica");
-        transportCompany.addUserToVehicle(passengerVehicle, "Mariana");*/
+        */transportCompany.addUserToVehicle(passengerVehicle, "Veronica");
+        transportCompany.addUserToVehicle(passengerVehicle, "Mariana");
         transportCompany.updateUser("Veronica", "Carol", 21, 65, null);
     }
 

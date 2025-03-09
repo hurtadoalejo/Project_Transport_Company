@@ -13,6 +13,7 @@ public class User {
      * @param name Name of the user to create
      * @param age Age of the user to create
      * @param weight Weight of the user to create
+     * @param vehicleAssociated Vehicle associated of the user to create
      */
     public User(String name, int age, double weight, PassengerVehicle vehicleAssociated) {
         this.name = name;

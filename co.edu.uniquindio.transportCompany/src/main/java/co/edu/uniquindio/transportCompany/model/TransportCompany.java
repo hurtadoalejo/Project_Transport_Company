@@ -152,12 +152,10 @@ public class TransportCompany {
      * @param user User to be deleted
      * @return Boolean if the action was done successfully or not
      */
-    private boolean deleteUserPermanentlyFromVehicle(User user) {
+    private void deleteUserPermanentlyFromVehicle(User user) {
         if (user != null && user.getVehicleAssociated() != null) {
             user.getVehicleAssociated().getAssociatedUsersList().remove(user);
-            return true;
         }
-        return false;
     }
 
     /**
@@ -174,11 +172,11 @@ public class TransportCompany {
         User possibleUser = obtainUser(name);
         if (userFounded != null) {
             if (possibleUser == null || possibleUser.equals(userFounded)) {
-                User newUser = User.builder().name(name).age(age).weight(weight).vehicleAssociated(vehicleAssociated).build();
-                if (updateUserPassengerVehicle(userFounded, newUser)){
-                    exchangeUserTransportCompany(userFounded, newUser);
-                    return true;
-                }
+                User newUser = User.builder().name(name).age(age)
+                        .weight(weight).vehicleAssociated(vehicleAssociated).build();
+                updateUserPassengerVehicle(userFounded, newUser);
+                exchangeUserTransportCompany(userFounded, newUser);
+                return true;
             }
         }
         return false;
@@ -190,22 +188,13 @@ public class TransportCompany {
      * @param newUser New user
      * @return Boolean if the action was done successfully or not
      */
-    private boolean updateUserPassengerVehicle(User oldUser, User newUser) {
-        if (newUser == null) {
-            return false;
-        }
+    private void updateUserPassengerVehicle(User oldUser, User newUser) {
         if (oldUser.getVehicleAssociated() == null && newUser.getVehicleAssociated() != null) {
             newUser.getVehicleAssociated().getAssociatedUsersList().add(newUser);
-            return true;
         } else if (oldUser.getVehicleAssociated() != null && newUser.getVehicleAssociated() != null) {
             exchangeUserPassengerVehicle(oldUser, newUser);
-            return true;
         } else if (oldUser.getVehicleAssociated() != null && newUser.getVehicleAssociated() == null) {
             oldUser.getVehicleAssociated().getAssociatedUsersList().remove(oldUser);
-            return true;
-        }
-        else{
-            return true;
         }
     }
 
@@ -213,42 +202,35 @@ public class TransportCompany {
      * Method to exchange one user with a new one in the users list of its associated vehicle
      * @param oldUser Old user to be replaced
      * @param newUser New user to replace
-     * @return Boolean if the action was done successfully or not
      */
-    private boolean exchangeUserPassengerVehicle(User oldUser, User newUser) {
+    private void exchangeUserPassengerVehicle(User oldUser, User newUser) {
         PassengerVehicle oldPassengerVehicle = oldUser.getVehicleAssociated();
         PassengerVehicle newPassengerVehicle = newUser.getVehicleAssociated();
         if (!oldPassengerVehicle.getPlate().equals(newPassengerVehicle.getPlate()) && newPassengerVehicle.getAssociatedUsersList().size() < newPassengerVehicle.getMaxPassengers()) {
             oldPassengerVehicle.getAssociatedUsersList().remove(oldUser);
             newPassengerVehicle.getAssociatedUsersList().add(newUser);
-            return true;
         }
         else{
             LinkedList<User> associatedUsers = oldUser.getVehicleAssociated().getAssociatedUsersList();
             for (int i = 0; i < associatedUsers.size(); i++) {
                 if (associatedUsers.get(i).getName().equals(oldUser.getName())) {
                     associatedUsers.set(i, newUser);
-                    return true;
                 }
             }
         }
-        return false;
     }
 
     /**
      * Method to exchange one user for another in the transport company's users list
      * @param oldUser Old user to be replaced
      * @param newUser New user to replace
-     * @return Boolean if the action was done successfully or not
      */
-    public boolean exchangeUserTransportCompany(User oldUser, User newUser) {
+    private void exchangeUserTransportCompany(User oldUser, User newUser) {
         for (int i = 0; i < usersList.size(); i++) {
             if (usersList.get(i).getName().equals(oldUser.getName())) {
                 usersList.set(i, newUser);
-                return true;
             }
         }
-        return false;
     }
 
     /**
