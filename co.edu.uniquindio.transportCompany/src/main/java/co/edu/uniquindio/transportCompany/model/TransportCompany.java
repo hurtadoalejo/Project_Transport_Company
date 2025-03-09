@@ -245,7 +245,7 @@ public class TransportCompany {
         Proprietor proprietorFounded = obtainProprietor(id);
         if (proprietorFounded == null) {
             getPropietorsList().add(Proprietor.builder().name(name).email(email)
-                    .phoneNumber(phoneNumber).id(id).build());
+                    .phoneNumber(phoneNumber).id(id).associatedVehiclesList(new LinkedList<>()).build());
             return true;
         }
         return false;

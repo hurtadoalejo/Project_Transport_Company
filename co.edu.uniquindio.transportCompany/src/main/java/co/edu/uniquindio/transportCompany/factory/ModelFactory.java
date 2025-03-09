@@ -49,8 +49,7 @@ public class ModelFactory {
         transportCompany.addProprietor("Alejandro", "alejo@gmail.com", "3161971519", "1092850037");
         transportCompany.addProprietor("Luz", "alejo@gmail.com", "3161971519", "109285003");
         transportCompany.addProprietor("Hugo", "alejo@gmail.com", "3161971519", "25022");
-        LinkedList<User> users = new LinkedList<>();
-        PassengerVehicle passengerVehicle = new PassengerVehicleBuilder().plate("VAD92G").brand("Toyota").colour("Azul").model(2020).maxPassengers(5).associatedUsersList(users).build();
+        PassengerVehicle passengerVehicle = new PassengerVehicleBuilder().plate("VAD92G").brand("Toyota").colour("Azul").model(2020).maxPassengers(5).associatedUsersList(new LinkedList<>()).build();
         transportCompany.getPassengerVehiclesList().add(passengerVehicle);
         /*transportCompany.addVehicle(passengerVehicle);
         transportCompany.addVehicle(passengerVehicle2);
