@@ -304,12 +304,21 @@ public class TransportCompany {
                         .phoneNumber(phoneNumber).id(id).principalVehicle(obtainVehicle(plate))
                         .associatedVehiclesList(proprietorFounded.getAssociatedVehiclesList()).build();
                 if (updateVehicleAssociated(proprietorFounded, newProprietor)){
+                    updateVehiclePrincipalProprietor(obtainVehicle(plate), newProprietor);
                     exchangeProprietorTransportCompany(proprietorFounded, newProprietor);
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private void updateVehiclePrincipalProprietor(Vehicle vehicle, Proprietor proprietor) {
+        if (vehicle instanceof PassengerVehicle passengerVehicle) {
+            //updatePassengerVehicle();
+        } else if (vehicle instanceof CargoVehicle cargoVehicle) {
+            updateCargoVehicle(cargoVehicle.getPlate(), cargoVehicle.getPlate(), cargoVehicle.getBrand(), cargoVehicle.getColour(), cargoVehicle.getModel(), proprietor.getId(), cargoVehicle.getCargoCapacity(), cargoVehicle.getAxlesNumber());
+        }
     }
 
     /**
@@ -490,8 +499,7 @@ public class TransportCompany {
                         || cargoVehicleFounded.getProprietor().getId().equals(proprietor.getId()))
                         && !isProprietorInAssociates(cargoVehicleFounded.getAssociatedProprietorList(), proprietor)) {
                     exchangeCargoVehicleTransportCompany(cargoVehicleFounded, newCargoVehicle);
-                    updateProprietor(proprietor.getId(), proprietor.getName(), proprietor.getEmail(),
-                            proprietor.getPhoneNumber(), proprietor.getId(), plate);
+                    /*updateProprietor(proprietor.getId(), proprietor.getName(), proprietor.getEmail(), proprietor.getPhoneNumber(), proprietor.getId(), plate);*/
                 }
             }
         }
