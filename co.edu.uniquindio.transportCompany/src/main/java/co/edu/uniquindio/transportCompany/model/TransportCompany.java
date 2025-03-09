@@ -1,4 +1,7 @@
 package co.edu.uniquindio.transportCompany.model;
+import co.edu.uniquindio.transportCompany.builder.CargoVehicleBuilder;
+import co.edu.uniquindio.transportCompany.builder.PassengerVehicleBuilder;
+
 import java.util.LinkedList;
 
 public class TransportCompany {
@@ -164,16 +167,16 @@ public class TransportCompany {
      * @param name New name of the user
      * @param age New age of the user
      * @param weight New weight of the user
-     * @param vehicleAssociated New vehicle associated of the user
+     * @param plate Plate of the new vehicle associated of the user
      * @return Boolean if the action was done successfully or not
      */
-    public boolean updateUser(String oldName, String name, int age, double weight, PassengerVehicle vehicleAssociated) {
+    public boolean updateUser(String oldName, String name, int age, double weight, String plate) {
         User userFounded = obtainUser(oldName);
         User possibleUser = obtainUser(name);
         if (userFounded != null) {
             if (possibleUser == null || possibleUser.equals(userFounded)) {
                 User newUser = User.builder().name(name).age(age)
-                        .weight(weight).vehicleAssociated(vehicleAssociated).build();
+                        .weight(weight).vehicleAssociated(obtainPassengerVehicle(plate)).build();
                 updateUserPassengerVehicle(userFounded, newUser);
                 exchangeUserTransportCompany(userFounded, newUser);
                 return true;
@@ -186,7 +189,6 @@ public class TransportCompany {
      * Method to update one user's vehicle associated for a new user's vehicle associated
      * @param oldUser Old user
      * @param newUser New user
-     * @return Boolean if the action was done successfully or not
      */
     private void updateUserPassengerVehicle(User oldUser, User newUser) {
         if (oldUser.getVehicleAssociated() == null && newUser.getVehicleAssociated() != null) {
@@ -275,24 +277,12 @@ public class TransportCompany {
     public boolean deleteProprietor(String id) {
         Proprietor proprietorFounded = obtainProprietor(id);
         if (proprietorFounded != null) {
+            deleteProprietorFromVehicles(proprietorFounded);
+            deleteVehicleWithProprietor(proprietorFounded.getPrincipalVehicle().getPlate());
             getPropietorsList().remove(proprietorFounded);
-            dissociateProprietorVehicleAssociated(proprietorFounded);
-            //deleteVehicle(proprietorFounded.getPrincipalVehicle().getPlate());
             return true;
         }
         return false;
-    }
-
-    /**
-     * Method to dissociate all the vehicles from the proprietor's vehicles associated list
-     * @param proprietor Proprietor to be dissociated
-     */
-    private void dissociateProprietorVehicleAssociated(Proprietor proprietor) {
-        if (!proprietor.getAssociatedVehiclesList().isEmpty()) {
-            for (Vehicle vehicle : proprietor.getAssociatedVehiclesList()) {
-                vehicle.getAssociatedProprietorList().remove(proprietor);
-            }
-        }
     }
 
     /**
@@ -302,20 +292,20 @@ public class TransportCompany {
      * @param email New email of the proprietor
      * @param phoneNumber New phoneNumber of the proprietor
      * @param id New ID of the proprietor
-     * @param vehicleAssociated New vehicleAssociated of the proprietor
+     * @param plate Plate of the new vehicleAssociated of the proprietor
      * @return Boolean if the action was done successfully or not
      */
-    public boolean updateProprietor(String oldId, String name, String email, String phoneNumber, String id, Vehicle vehicleAssociated) {
+    public boolean updateProprietor(String oldId, String name, String email, String phoneNumber, String id, String plate) {
         Proprietor proprietorFounded = obtainProprietor(id);
         Proprietor possibleProprietor = obtainProprietor(id);
         if (proprietorFounded != null) {
             if (possibleProprietor == null || possibleProprietor.equals(proprietorFounded)) {
                 Proprietor newProprietor = Proprietor.builder().name(name).email(email)
-                        .phoneNumber(phoneNumber).id(id).build();
-                if (true){
-                    exchangeProprietorTransportCompany(proprietorFounded, newProprietor);
-                    return true;
-                }
+                        .phoneNumber(phoneNumber).id(id).principalVehicle(obtainVehicle(plate))
+                        .associatedVehiclesList(proprietorFounded.getAssociatedVehiclesList()).build();
+                updateVehicleAssociated(proprietorFounded, newProprietor);
+                exchangeProprietorTransportCompany(proprietorFounded, newProprietor);
+                return true;
             }
         }
         return false;
@@ -325,25 +315,187 @@ public class TransportCompany {
      * Method to exchange one proprietor for another in the transport company's proprietors list
      * @param oldProprietor Old proprietor to be replaced
      * @param newProprietor New proprietor to replace
-     * @return Boolean if the action was done successfully or not
      */
-    private boolean exchangeProprietorTransportCompany(Proprietor oldProprietor, Proprietor newProprietor) {
+    private void exchangeProprietorTransportCompany(Proprietor oldProprietor, Proprietor newProprietor) {
         for (int i = 0; i < propietorsList.size(); i++) {
             if (propietorsList.get(i).getId().equals(oldProprietor.getId())) {
                 propietorsList.set(i, newProprietor);
-                return true;
             }
+        }
+    }
+
+    /**
+     * Method to update a proprietor's vehicle
+     * @param oldProprietor Old proprietor of the vehicle
+     * @param newProprietor New proprietor of the vehicle
+     */
+    private void updateVehicleAssociated(Proprietor oldProprietor, Proprietor newProprietor) {
+        if (oldProprietor.getPrincipalVehicle() != null && newProprietor.getPrincipalVehicle() == null) {
+            deleteVehicle(oldProprietor.getPrincipalVehicle().getPlate());
+        }
+    }
+
+    /**
+     * Method to add one passenger vehicle to the transport company's passenger vehicles list
+     * @param plate Plate of the new passenger vehicle
+     * @param brand Brand of the new passenger vehicle
+     * @param colour Colour of the new passenger vehicle
+     * @param model Model of the new passenger vehicle
+     * @param id ID of the passenger vehicle's proprietor
+     * @param maxPassengers Max passengers of the new passenger vehicle
+     * @return Boolean if the action was done successfully or not
+     */
+    public boolean addPassengerVehicle(String plate, String brand, String colour, int model,
+                                       String id, int maxPassengers) {
+        PassengerVehicle passengerVehicle = obtainPassengerVehicle(plate);
+        Proprietor proprietor = obtainProprietor(id);
+        if (passengerVehicle == null && isProprietorAvailable(proprietor)) {
+            getPassengerVehiclesList().add(new PassengerVehicleBuilder().plate(plate).brand(brand).
+                    colour(colour).model(model).proprietor(proprietor).maxPassengers(maxPassengers).
+                    associatedUsersList(new LinkedList<>()).associatedProprietorList(new LinkedList<>()).build());
+            updateProprietor(proprietor.getId(), proprietor.getName(), proprietor.getEmail(), proprietor.getPhoneNumber(), proprietor.getId(), plate);
+            return true;
         }
         return false;
     }
 
     /**
-     * Method to verify if a proprietor is on one associatesList
+     * Method to add one cargo vehicle to the transport company's cargo vehicles list
+     * @param plate Plate of the new cargo vehicle
+     * @param brand Brand of the new cargo vehicle
+     * @param colour Colour of the new cargo vehicle
+     * @param model Model of the new cargo vehicle
+     * @param id ID of the cargo vehicle's proprietor
+     * @param cargoCapacity Cargo capacity of the new cargo vehicle
+     * @param axlesNumber Axles number of the new cargo vehicle
+     * @return Boolean if the action was done successfully or not
+     */
+    public boolean addCargoVehicle(String plate, String brand, String colour, int model,
+                                   String id, double cargoCapacity, int axlesNumber) {
+        CargoVehicle cargoVehicle = obtainCargoVehicle(plate);
+        Proprietor proprietor = obtainProprietor(id);
+        if (cargoVehicle == null && isProprietorAvailable(proprietor)) {
+            getCargoVehiclesList().add(new CargoVehicleBuilder().plate(plate).brand(brand).
+                    colour(colour).model(model).proprietor(proprietor).cargoCapacity(cargoCapacity).
+                    axlesNumber(axlesNumber).associatedProprietorList(new LinkedList<>()).build());
+            updateProprietor(proprietor.getId(), proprietor.getName(), proprietor.getEmail(), proprietor.getPhoneNumber(), proprietor.getId(), plate);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to obtain one cargo vehicle based on the plate given
+     * @param plate Plate of the cargo vehicle to search
+     * @return One cargo vehicle or null depending on whether it could be found
+     */
+    public CargoVehicle obtainCargoVehicle(String plate) {
+        CargoVehicle cargoVehicle = null;
+        for (CargoVehicle tempCargoVehicle : getCargoVehiclesList()) {
+            if (tempCargoVehicle.getPlate().equals(plate)) {
+                cargoVehicle = tempCargoVehicle;
+                break;
+            }
+        }
+        return cargoVehicle;
+    }
+
+    /**
+     * Method to obtain one passenger vehicle based on the plate given
+     * @param plate Plate of the passenger vehicle to search
+     * @return One passenger vehicle or null depending on whether it could be found
+     */
+    public PassengerVehicle obtainPassengerVehicle(String plate) {
+        PassengerVehicle passengerVehicle = null;
+        for (PassengerVehicle tempPassengerVehicle : getPassengerVehiclesList()) {
+            if (tempPassengerVehicle.getPlate().equals(plate)) {
+                passengerVehicle = tempPassengerVehicle;
+                break;
+            }
+        }
+        return passengerVehicle;
+    }
+
+    /**
+     * Method to delete a vehicle that is about to be deleted with the proprietor
+     * @param plate Plate of the vehicle to delete
+     */
+    private void deleteVehicleWithProprietor(String plate) {
+        Vehicle vehicle = obtainVehicle(plate);
+        if (vehicle != null) {
+            deleteProprietorsAssociated(vehicle);
+            if (vehicle instanceof PassengerVehicle passengerVehicle) {
+                deleteUsersFromVehicle(passengerVehicle);
+                getPassengerVehiclesList().remove(passengerVehicle);
+            }
+            else if (vehicle instanceof CargoVehicle cargoVehicle) {
+                getCargoVehiclesList().remove(cargoVehicle);
+            }
+        }
+    }
+
+    /**
+     * Method to delete one vehicle
+     * @param plate Plate of the vehicle to delete
+     * @return Boolean if the action was done successfully or not
+     */
+    public boolean deleteVehicle(String plate) {
+        Vehicle vehicle = obtainVehicle(plate);
+        if (vehicle != null) {
+            deleteProprietorsAssociated(vehicle);
+            exchangeProprietorTransportCompanyNoVehicle(vehicle.getProprietor());
+            if (vehicle instanceof PassengerVehicle passengerVehicle) {
+                deleteUsersFromVehicle(passengerVehicle);
+                getPassengerVehiclesList().remove(passengerVehicle);
+            }
+            else if (vehicle instanceof CargoVehicle cargoVehicle) {
+                getCargoVehiclesList().remove(cargoVehicle);
+            }
+        }
+        return false;
+    }
+
+    public boolean updateCargoVehicle(String plate, String brand, String colour, int model,){
+
+    }
+
+    public boolean updatePassengerVehicle(String plate, String brand, String colour, int model){
+        
+    }
+
+    /**
+     * Method to exchange one proprietor from the transport company's proprietors list for
+     * the same proprietor without the principal vehicle
+     * @param proprietor Proprietor given to exchange
+     */
+    private void exchangeProprietorTransportCompanyNoVehicle(Proprietor proprietor) {
+        Proprietor newProprietor = Proprietor.builder().name(proprietor.getName()).email(proprietor.getEmail())
+                .phoneNumber(proprietor.getPhoneNumber()).id(proprietor.getId()).principalVehicle(null)
+                .associatedVehiclesList(proprietor.getAssociatedVehiclesList()).build();
+        exchangeProprietorTransportCompany(proprietor, newProprietor);
+    }
+
+    /**
+     * Method to obtain one vehicle based on the plate given
+     * @param plate Plate of the vehicle to search
+     * @return One vehicle or null depending on whether it could be found
+     */
+    public Vehicle obtainVehicle(String plate) {
+        Vehicle vehicle = obtainCargoVehicle(plate);
+        if (vehicle != null) {
+            return vehicle;
+        }
+        vehicle = obtainPassengerVehicle(plate);
+        return vehicle;
+    }
+
+    /**
+     * Method to verify if a proprietor is one of the associated proprietors
      * @param associatesList Associates list to find
      * @param proprietor Proprietor to verify
      * @return Boolean if the proprietor was found or not
      */
-    public boolean isProprietorInAssociates(LinkedList<Proprietor> associatesList, Proprietor proprietor){
+    private boolean isProprietorInAssociates(LinkedList<Proprietor> associatesList, Proprietor proprietor){
         for (Proprietor temporalProprietor : associatesList) {
             if (temporalProprietor.getId().equals(proprietor.getId())) {
                 return true;
@@ -357,7 +509,7 @@ public class TransportCompany {
      * @param proprietor Proprietor to verify
      * @return Boolean if the proprietor is available or not
      */
-    public boolean isProprietorAvailable(Proprietor proprietor) {
+    private boolean isProprietorAvailable(Proprietor proprietor) {
         boolean isAvailable = false;
         if (proprietor != null) {
             if (proprietor.getPrincipalVehicle() == null) {
@@ -369,19 +521,20 @@ public class TransportCompany {
 
     /**
      * Method to add one user to the associated users list of one passenger vehicle
-     * @param passengerVehicle Passenger vehicle to get associated with
+     * @param plate Plate of the vehicle to get associated with
      * @param name Name of the user to associate
      * @return Boolean if the action was done successfully or not
      */
-    public boolean addUserToVehicle(PassengerVehicle passengerVehicle, String name){
+    public boolean addUserToVehicle(String plate, String name){
         User userFound = obtainUser(name);
-        if (userFound == null ||
+        PassengerVehicle passengerVehicle = obtainPassengerVehicle(plate);
+        if (userFound == null || passengerVehicle == null || userFound.getVehicleAssociated() != null ||
                 passengerVehicle.getAssociatedUsersList().size() >= passengerVehicle.getMaxPassengers()) {
             return false;
         }
         if (!passengerVehicle.getAssociatedUsersList().contains(userFound)) {
             updateUser(userFound.getName(), userFound.getName(), userFound.getAge(),
-                    userFound.getWeight(), passengerVehicle);
+                    userFound.getWeight(), plate);
             return true;
         }
         return false;
@@ -389,10 +542,10 @@ public class TransportCompany {
 
     /**
      * Method to delete all the users associated from a vehicle
-     * @param vehicle Vehicle given
+     * @param passengerVehicle Passenger vehicle given
      */
-    public void deleteUsersFromVehicle(Vehicle vehicle) {
-        if (vehicle instanceof PassengerVehicle passengerVehicle){
+    private void deleteUsersFromVehicle(PassengerVehicle passengerVehicle) {
+        if (passengerVehicle != null) {
             for (User user : passengerVehicle.getAssociatedUsersList()) {
                 updateUser(user.getName(), user.getName(), user.getAge(), user.getWeight(), null);
             }
@@ -402,12 +555,14 @@ public class TransportCompany {
 
     /**
      * Method to delete one user from its associated vehicle
-     * @param user User given to delete association
+     * @param name Name of the user to delete association
      * @return Boolean if the action was done successfully or not
      */
-    public boolean deleteUserFromVehicle(User user) {
-        if (user.getVehicleAssociated() != null) {
+    public boolean deleteUserFromVehicle(String name) {
+        User user = obtainUser(name);
+        if (user != null && user.getVehicleAssociated() != null) {
             updateUser(user.getName(), user.getName(), user.getAge(), user.getWeight(), null);
+            user.getVehicleAssociated().getAssociatedUsersList().remove(user);
             return true;
         }
         return false;
@@ -415,12 +570,18 @@ public class TransportCompany {
 
     /**
      * Method to add one proprietor to a vehicle's associated proprietors list
-     * @param vehicle Vehicle given to get associate with
-     * @param proprietor Proprietor to associate
+     * @param plate Plate of the vehicle to get associated with
+     * @param id ID of the proprietor to associate
      * @return Boolean if the action was done successfully or not
      */
-    public boolean addProprietorAssociated(Vehicle vehicle, Proprietor proprietor){
-        if (!isProprietorInAssociates(vehicle.getAssociatedProprietorList(), proprietor) && proprietor != vehicle.getProprietor()){
+    public boolean addProprietorAssociated(String plate, String id){
+        Proprietor proprietor = obtainProprietor(id);
+        Vehicle vehicle = obtainVehicle(plate);
+        if (proprietor == null || vehicle == null) {
+            return false;
+        }
+        if (!isProprietorInAssociates(vehicle.getAssociatedProprietorList(), proprietor) &&
+                !proprietor.getId().equals(vehicle.getProprietor().getId())){
             vehicle.getAssociatedProprietorList().add(proprietor);
             proprietor.getAssociatedVehiclesList().add(vehicle);
             return true;
@@ -430,12 +591,17 @@ public class TransportCompany {
 
     /**
      * Method to delete one proprietor from a vehicle's associated proprietors list
-     * @param vehicle Vehicle given to delete association
-     * @param proprietor Proprietor given to delete association
+     * @param plate Plate of the vehicle to delete association
+     * @param id ID of the proprietor to delete association
      * @return Boolean if the action was done successfully or not
      */
-    public boolean deleteProprietorAssociated(Vehicle vehicle, Proprietor proprietor){
-        if (vehicle.getAssociatedProprietorList().contains(proprietor)){
+    public boolean deleteProprietorVehicleAssociated(String plate, String id){
+        Vehicle vehicle = obtainVehicle(plate);
+        Proprietor proprietor = obtainProprietor(id);
+        if (proprietor == null || vehicle == null) {
+            return false;
+        }
+        if (vehicle.getAssociatedProprietorList().contains(proprietor)) {
             vehicle.getAssociatedProprietorList().remove(proprietor);
             proprietor.getAssociatedVehiclesList().remove(vehicle);
             return true;
@@ -447,19 +613,20 @@ public class TransportCompany {
      * Method delete all the proprietor from a vehicle's associated proprietors list
      * @param vehicle Vehicle given
      */
-    public void deleteProprietorsAssociated(Vehicle vehicle){
+    private void deleteProprietorsAssociated(Vehicle vehicle){
         for (Proprietor proprietor : vehicle.getAssociatedProprietorList()) {
-            deleteProprietorAssociated(vehicle, proprietor);
+            proprietor.getAssociatedVehiclesList().remove(vehicle);
         }
+        vehicle.getAssociatedProprietorList().clear();
     }
 
     /**
      * Method delete one proprietor from all of its associated vehicles list
      * @param proprietor Proprietor to delete
      */
-    public void deleteProprietorFromVehicles(Proprietor proprietor){
+    private void deleteProprietorFromVehicles(Proprietor proprietor){
         for (Vehicle vehicle : proprietor.getAssociatedVehiclesList()) {
-            deleteProprietorAssociated(vehicle, proprietor);
+            deleteProprietorVehicleAssociated(vehicle.getPlate(), proprietor.getId());
         }
     }
 

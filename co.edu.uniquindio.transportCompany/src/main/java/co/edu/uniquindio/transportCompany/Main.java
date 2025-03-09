@@ -1,10 +1,7 @@
 package co.edu.uniquindio.transportCompany;
 
 import co.edu.uniquindio.transportCompany.factory.ModelFactory;
-import co.edu.uniquindio.transportCompany.model.PassengerVehicle;
-import co.edu.uniquindio.transportCompany.model.Proprietor;
-import co.edu.uniquindio.transportCompany.model.TransportCompany;
-import co.edu.uniquindio.transportCompany.model.User;
+import co.edu.uniquindio.transportCompany.model.*;
 
 import java.lang.management.ManagementFactory;
 
@@ -19,10 +16,22 @@ public class Main {
         System.out.println("Nombres en vehiculos: ");
         for (PassengerVehicle passengerVehicle : transportCompany.getPassengerVehiclesList()){
             System.out.println();
-            System.out.println(passengerVehicle.getPlate() + ":");
+            System.out.println(passengerVehicle.getPlate() + " " +passengerVehicle.getAssociatedProprietorList().size() + passengerVehicle.getProprietor().getId() + ":");
             for (User user : passengerVehicle.getAssociatedUsersList()){
                 System.out.println(user.getName());
             }
+        }
+        for (CargoVehicle cargoVehicle : transportCompany.getCargoVehiclesList()){
+            System.out.println();
+            System.out.println(cargoVehicle.getPlate() + " " + cargoVehicle.getAssociatedProprietorList().size() + cargoVehicle.getProprietor().getId() + ": ");
+            System.out.println(cargoVehicle.getProprietor().getName());
+        }
+        System.out.println();
+        System.out.println("Proprietarios: ");
+        for (Proprietor proprietor : transportCompany.getPropietorsList()){
+            System.out.print(proprietor.getName() + " ");
+            System.out.print(proprietor.getPrincipalVehicle() == null);
+            System.out.println(" " + proprietor.getAssociatedVehiclesList().size());
         }
     }
 }

@@ -40,23 +40,20 @@ public class ModelFactory {
      */
     private void initializeData(){
         transportCompany = new TransportCompany("La Carreta");
-        /*PassengerVehicle passengerVehicle = new PassengerVehicle("VAD908","Mercedes", "Red", 2005, proprietor, 2);
-        PassengerVehicle passengerVehicle2 = new PassengerVehicle("VAD905","Toyota", "Red", 2005, proprietor2, 1);
-        PassengerVehicle passengerVehicle3 = new PassengerVehicle("VAD906","Mazda", "Red", 2005, proprietor3, 2);
-        PassengerVehicle passengerVehicle4 = new PassengerVehicle("VAD907","Mazda", "Blue", 2005, proprietor, 2);*/
         transportCompany.addUser("Veronica", 21, 65);
         transportCompany.addUser("Mariana", 21, 65);
-        transportCompany.addProprietor("Alejandro", "alejo@gmail.com", "3161971519", "1092850037");
-        transportCompany.addProprietor("Luz", "alejo@gmail.com", "3161971519", "109285003");
-        transportCompany.addProprietor("Hugo", "alejo@gmail.com", "3161971519", "25022");
-        PassengerVehicle passengerVehicle = new PassengerVehicleBuilder().plate("VAD92G").brand("Toyota").colour("Azul").model(2020).maxPassengers(5).associatedUsersList(new LinkedList<>()).build();
-        transportCompany.getPassengerVehiclesList().add(passengerVehicle);
-        /*transportCompany.addVehicle(passengerVehicle);
-        transportCompany.addVehicle(passengerVehicle2);
-        transportCompany.addVehicle(passengerVehicle3);
-        */transportCompany.addUserToVehicle(passengerVehicle, "Veronica");
-        transportCompany.addUserToVehicle(passengerVehicle, "Mariana");
-        transportCompany.updateUser("Veronica", "Carol", 21, 65, null);
+        transportCompany.addProprietor("Alejandro", "alejo@gmail.com", "3161971519", "1");
+        transportCompany.addProprietor("Luz", "alejo@gmail.com", "3161971519", "2");
+        transportCompany.addProprietor("Hugo", "alejo@gmail.com", "3161971519", "3");
+        transportCompany.addPassengerVehicle("VAD905","Mercedes", "Red", 2005, "1", 2);
+        transportCompany.addPassengerVehicle("VAD906","Mercedes", "Red", 2005, "2", 2);
+        transportCompany.addCargoVehicle("VAD907","Toyota", "Red", 2005, "3",56, 4);
+        transportCompany.addUserToVehicle("VAD905", "Veronica");
+        transportCompany.addUserToVehicle("VAD905", "Mariana");
+        transportCompany.addProprietorAssociated("VAD905", "1");
+        transportCompany.addProprietorAssociated("VAD905", "2");
+        transportCompany.addProprietorAssociated("VAD905", "3");
+        transportCompany.deleteProprietor("1");
     }
 
 }
