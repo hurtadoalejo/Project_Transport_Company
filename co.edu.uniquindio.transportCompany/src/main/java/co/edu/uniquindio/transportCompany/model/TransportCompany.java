@@ -292,33 +292,80 @@ public class TransportCompany {
      * @param email New email of the proprietor
      * @param phoneNumber New phoneNumber of the proprietor
      * @param id New ID of the proprietor
-     * @param plate Plate of the new vehicleAssociated of the proprietor
      * @return Boolean if the action was done successfully or not
      */
-    public boolean updateProprietor(String oldId, String name, String email, String phoneNumber, String id, String plate) {
+    public boolean updateProprietor(String oldId, String name, String email, String phoneNumber, String id) {
         Proprietor proprietorFounded = obtainProprietor(oldId);
         Proprietor possibleProprietor = obtainProprietor(id);
         if (proprietorFounded != null) {
             if (possibleProprietor == null || possibleProprietor.equals(proprietorFounded)) {
                 Proprietor newProprietor = Proprietor.builder().name(name).email(email)
-                        .phoneNumber(phoneNumber).id(id).principalVehicle(obtainVehicle(plate))
-                        .associatedVehiclesList(proprietorFounded.getAssociatedVehiclesList()).build();
-                if (updateVehicleAssociated(proprietorFounded, newProprietor)){
-                    updateVehiclePrincipalProprietor(obtainVehicle(plate), newProprietor);
-                    exchangeProprietorTransportCompany(proprietorFounded, newProprietor);
-                    return true;
-                }
+                        .phoneNumber(phoneNumber).id(id)
+                        .principalVehicle(duplicateVehicle(proprietorFounded.getPrincipalVehicle(),proprietorFounded))
+                        .associatedVehiclesList(new LinkedList<>()).build();
+                exchangeVehiclesAssociated(proprietorFounded, newProprietor);
+                updateVehiclePrincipalProprietor(proprietorFounded.getPrincipalVehicle(), newProprietor);
+                exchangeProprietorTransportCompany(proprietorFounded, newProprietor);
+                return true;
             }
         }
         return false;
     }
 
-    private void updateVehiclePrincipalProprietor(Vehicle vehicle, Proprietor proprietor) {
-        if (vehicle instanceof PassengerVehicle passengerVehicle) {
-            //updatePassengerVehicle();
-        } else if (vehicle instanceof CargoVehicle cargoVehicle) {
-            updateCargoVehicle(cargoVehicle.getPlate(), cargoVehicle.getPlate(), cargoVehicle.getBrand(), cargoVehicle.getColour(), cargoVehicle.getModel(), proprietor.getId(), cargoVehicle.getCargoCapacity(), cargoVehicle.getAxlesNumber());
+    private Vehicle duplicateVehicle(Vehicle vehicle, Proprietor proprietor) {
+        if (vehicle == null) {
+            return null;
         }
+        if (vehicle instanceof PassengerVehicle passengerVehicle) {
+            return new PassengerVehicleBuilder().plate(passengerVehicle.getPlate()).brand(passengerVehicle.getBrand()).
+                    colour(passengerVehicle.getColour()).model(passengerVehicle.getModel())
+                    .proprietor(proprietor).maxPassengers(passengerVehicle.getMaxPassengers()).
+                    associatedUsersList(new LinkedList<>()).associatedProprietorList(new LinkedList<>()).build();
+        }
+        else if (vehicle instanceof CargoVehicle cargoVehicle) {
+            return new CargoVehicleBuilder().plate(cargoVehicle.getPlate()).brand(cargoVehicle.getBrand()).
+                    colour(cargoVehicle.getColour()).model(cargoVehicle.getModel()).proprietor(proprietor)
+                    .cargoCapacity(cargoVehicle.getCargoCapacity()).axlesNumber(cargoVehicle.getAxlesNumber()).associatedProprietorList(new LinkedList<>()).build();
+        }
+        return null;
+    }
+
+    private void updateProprietorOnlyVehicle(Proprietor proprietor, Vehicle vehicle){
+        Proprietor newProprietor = Proprietor.builder().name(proprietor.getName()).email(proprietor.getEmail())
+                .phoneNumber(proprietor.getPhoneNumber()).principalVehicle(vehicle)
+                .id(proprietor.getId()).associatedVehiclesList(new LinkedList<>()).build();
+        exchangeVehiclesAssociated(proprietor, newProprietor);
+        exchangeProprietorTransportCompany(proprietor, newProprietor);
+    }
+
+    private void exchangeVehiclesAssociated(Proprietor oldProprietor, Proprietor newProprietor) {
+        for (Vehicle vehicle : oldProprietor.getAssociatedVehiclesList()) {
+            for (int i = 0; i < vehicle.getAssociatedProprietorList().size(); i++) {
+                if (vehicle.getAssociatedProprietorList().get(i).getId().equals(oldProprietor.getId())) {
+                    vehicle.getAssociatedProprietorList().set(i, newProprietor);
+                    newProprietor.getAssociatedVehiclesList().add(vehicle);
+                }
+            }
+        }
+    }
+
+    private void updateVehiclePrincipalProprietor(Vehicle vehicle, Proprietor proprietor) {
+        if (vehicle != null) {
+            if (vehicle instanceof PassengerVehicle passengerVehicle) {
+                updatePassengerVehicleOnlyProprietor(passengerVehicle, proprietor);
+            } else if (vehicle instanceof CargoVehicle cargoVehicle) {
+                updateCargoVehicleOnlyProprietor(cargoVehicle, proprietor);
+            }
+        }
+    }
+
+    private void updatePassengerVehicleOnlyProprietor(PassengerVehicle passengerVehicle, Proprietor proprietor) {
+        exchangeUsersPassengerVehicle(passengerVehicle, proprietor.getPrincipalVehicle().getPlate());
+        exchangePassengerVehicleTransportCompany(passengerVehicle, (PassengerVehicle) proprietor.getPrincipalVehicle());
+    }
+
+    private void updateCargoVehicleOnlyProprietor(CargoVehicle cargoVehicle, Proprietor proprietor) {
+        exchangeCargoVehicleTransportCompany(cargoVehicle, (CargoVehicle) proprietor.getPrincipalVehicle());
     }
 
     /**
@@ -336,22 +383,6 @@ public class TransportCompany {
     }
 
     /**
-     * Method to update a proprietor's vehicle
-     * @param oldProprietor Old proprietor of the vehicle
-     * @param newProprietor New proprietor of the vehicle
-     */
-    private boolean updateVehicleAssociated(Proprietor oldProprietor, Proprietor newProprietor) {
-        if (oldProprietor.getPrincipalVehicle() != null && newProprietor.getPrincipalVehicle() == null) {
-            deleteVehicle(oldProprietor.getPrincipalVehicle().getPlate());
-        }
-        else if (oldProprietor.getPrincipalVehicle() != null && newProprietor.getPrincipalVehicle() != null) {
-            return oldProprietor.getPrincipalVehicle().getPlate()
-                    .equals(newProprietor.getPrincipalVehicle().getPlate());
-        }
-        return true;
-    }
-
-    /**
      * Method to add one passenger vehicle to the transport company's passenger vehicles list
      * @param plate Plate of the new passenger vehicle
      * @param brand Brand of the new passenger vehicle
@@ -366,10 +397,11 @@ public class TransportCompany {
         PassengerVehicle passengerVehicle = obtainPassengerVehicle(plate);
         Proprietor proprietor = obtainProprietor(id);
         if (passengerVehicle == null && isProprietorAvailable(proprietor)) {
-            getPassengerVehiclesList().add(new PassengerVehicleBuilder().plate(plate).brand(brand).
+            PassengerVehicle passengerVehicleCreated = new PassengerVehicleBuilder().plate(plate).brand(brand).
                     colour(colour).model(model).proprietor(proprietor).maxPassengers(maxPassengers).
-                    associatedUsersList(new LinkedList<>()).associatedProprietorList(new LinkedList<>()).build());
-            updateProprietor(proprietor.getId(), proprietor.getName(), proprietor.getEmail(), proprietor.getPhoneNumber(), proprietor.getId(), plate);
+                    associatedUsersList(new LinkedList<>()).associatedProprietorList(new LinkedList<>()).build();
+            getPassengerVehiclesList().add(passengerVehicleCreated);
+            updateProprietorOnlyVehicle(proprietor, passengerVehicleCreated);
             return true;
         }
         return false;
@@ -391,10 +423,11 @@ public class TransportCompany {
         CargoVehicle cargoVehicle = obtainCargoVehicle(plate);
         Proprietor proprietor = obtainProprietor(id);
         if (cargoVehicle == null && isProprietorAvailable(proprietor)) {
-            getCargoVehiclesList().add(new CargoVehicleBuilder().plate(plate).brand(brand).
+            CargoVehicle cargoVehicleCreated = new CargoVehicleBuilder().plate(plate).brand(brand).
                     colour(colour).model(model).proprietor(proprietor).cargoCapacity(cargoCapacity).
-                    axlesNumber(axlesNumber).associatedProprietorList(new LinkedList<>()).build());
-            updateProprietor(proprietor.getId(), proprietor.getName(), proprietor.getEmail(), proprietor.getPhoneNumber(), proprietor.getId(), plate);
+                    axlesNumber(axlesNumber).associatedProprietorList(new LinkedList<>()).build();
+            getCargoVehiclesList().add(cargoVehicleCreated);
+            updateProprietorOnlyVehicle(proprietor, cargoVehicleCreated);
             return true;
         }
         return false;
@@ -519,8 +552,28 @@ public class TransportCompany {
         }
     }
 
-    public boolean updatePassengerVehicle(String plate, String brand, String colour, int model){
-        return false;
+    /**
+     * Method to exchange one passengerVehicle for another in the transport company's passenger vehicles list
+     * @param oldPassengerVehicle Old passenger vehicle to be replaced
+     * @param newPassengerVehicle New passenger vehicle to replace
+     */
+    private void exchangePassengerVehicleTransportCompany(PassengerVehicle oldPassengerVehicle, PassengerVehicle newPassengerVehicle){
+        for (int i = 0; i < getPassengerVehiclesList().size(); i++) {
+            if (getPassengerVehiclesList().get(i).getPlate().equals(oldPassengerVehicle.getPlate())) {
+                getPassengerVehiclesList().set(i, newPassengerVehicle);
+            }
+        }
+    }
+
+    private void changeAllAssociatedProprietors(Vehicle oldVehicle, Vehicle newVehicle) {
+        for (Proprietor proprietor : oldVehicle.getAssociatedProprietorList()){
+            for (int i = 0; i < proprietor.getAssociatedVehiclesList().size(); i++) {
+                if (proprietor.getAssociatedVehiclesList().get(i).getPlate().equals(oldVehicle.getPlate())) {
+                    proprietor.getAssociatedVehiclesList().set(i, newVehicle);
+                    newVehicle.getAssociatedProprietorList().add(proprietor);
+                }
+            }
+        }
     }
 
     /**
@@ -610,6 +663,21 @@ public class TransportCompany {
                 updateUser(user.getName(), user.getName(), user.getAge(), user.getWeight(), null);
             }
             passengerVehicle.getAssociatedUsersList().clear();
+        }
+    }
+
+    /**
+     * Method to exchange all the users of one passenger vehicle to another
+     * @param passengerVehicle Passenger vehicle given
+     * @param newPlate Plate of the new passenger vehicle to assign
+     */
+    private void exchangeUsersPassengerVehicle(PassengerVehicle passengerVehicle, String newPlate) {
+        PassengerVehicle newPassengerVehicle = obtainPassengerVehicle(newPlate);
+        if (passengerVehicle != null) {
+            for (User user : passengerVehicle.getAssociatedUsersList()) {
+                updateUser(user.getName(), user.getName(), user.getAge(), user.getWeight(), newPlate);
+                newPassengerVehicle.getAssociatedUsersList().add(user);
+            }
         }
     }
 

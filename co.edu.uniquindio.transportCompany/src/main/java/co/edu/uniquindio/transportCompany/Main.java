@@ -33,5 +33,10 @@ public class Main {
             System.out.print(proprietor.getPrincipalVehicle() == null);
             System.out.println(" " + proprietor.getAssociatedVehiclesList().size());
         }
+
+        System.out.println(transportCompany.getPropietorsList().get(0));
+        System.out.println(transportCompany.getPropietorsList().get(0).getName());
+        System.out.println(transportCompany.getPassengerVehiclesList().get(0).getProprietor());
+        System.out.println(transportCompany.getPassengerVehiclesList().get(0).getProprietor().getName());
     }
 }

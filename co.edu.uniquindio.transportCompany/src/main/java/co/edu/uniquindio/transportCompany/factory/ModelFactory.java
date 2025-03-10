@@ -53,7 +53,7 @@ public class ModelFactory {
         transportCompany.addUserToVehicle("VAD905", "Mariana");
         transportCompany.addProprietorAssociated("VAD907", "1");
         transportCompany.addProprietorAssociated("VAD907", "2");
-        transportCompany.updateProprietor("1","Alejandro", "alejo@gmail.com", "3161971519", "20", "VAD905");
+        //transportCompany.updateProprietor("1","Alejandro", "alejo@gmail.com", "3161971519", "20");
         //transportCompany.updateCargoVehicle("VAD907", "VAD908", "Toyota", "Red", 2005, "3",56, 4);
     }
 
